@@ -65,7 +65,6 @@ from position 6, in range of 3-5 you have options of position 9 or position 10, 
 When jumping back, jump min interval, move left until either you detect a changed value or you hit max interval
 
 
-
 M[1]: 10 first
 M[2]: 11 New
 M[3]: 14 New

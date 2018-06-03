@@ -1,6 +1,12 @@
 import java.util.*;
 import java.io.*;
 
+/*
+EXAMPLE EXPECTED INPUT FORMAT
+2 5
+1   2   3  6   8  9   10
+10  11  4  17  6  15  20
+*/
 
 public class maivassign3{
 	public static void main(String [] args){
@@ -79,14 +85,7 @@ public class maivassign3{
 			rev[i] = curr.getRev();
 		}
 
-		//TODO: delete this
-		// for(int i = 0; i < positions.length; i++){
-		// 	System.out.print("Position: " + positions[i]);
-		// 	System.out.print(" Rev: " + rev[i] + "\n");
-		// }
-
 		curr = signs.get(signs.size()-1);
-		System.out.println(curr.getDistance());
 		int[] MV = new int[curr.getDistance()+1];
 
 		MV[0] = 0;
@@ -102,36 +101,30 @@ public class maivassign3{
 				if(positions[next] != x){
 					//None add prev rev value
 					MV[x] = MV[x-1];
-					System.out.println("M[" + x +"]: " + MV[x] + " Prev");
 				}else{
-					//Check lower constraint 
+					//Check lower constraint
 					if(x >= minIntr){
-						//Check upper constraint 
+						//Check upper constraint
 						if((x-prevIndex) <= maxIntr){
 							MV[x] = Math.max(MV[x-minIntr] + rev[next], MV[x-1]);
 							prevIndex = x;
-							System.out.println("M[" + x +"]: " + MV[x] + " New");
 						}else{
 							//Outside upper contraint use prev
 							MV[x] = MV[x-1];
-							System.out.println("M[" + x +"]: " + MV[x] + " Prev");
 						}
 					}else{
 						//No billboard placed yet
 						MV[x] = rev[next];
-						System.out.println("M[" + x +"]: " + MV[x] + " first");
 					}
 					next++;
 				}
 			}
 
 		}
-		
-		//Table built starting from end of table, jump backwards minIntr and look through each index up to maxIntr for value change
 
+		//Table built starting from end of table, jump backwards minIntr and look through each index up to maxIntr for value change
 		currIndex = MV.length-1;
 		System.out.println();
-		System.out.println("Length: " + currIndex);
 		int currValue = 0;
 		int forward = 1;
 		boolean changeFound = false;
@@ -144,12 +137,11 @@ public class maivassign3{
 				//Go back one and add to stack
 				currIndex++;
 				path.push(currIndex);
-				System.out.println("Added: " + currIndex+ " " + MV[currIndex]);
 				changeFound = true;
 			}
 			forward++;
 		}
-		
+
 		while(finished == false){
 			currIndex = currIndex - minIntr;
 			if(currIndex <= 0){
@@ -167,14 +159,13 @@ public class maivassign3{
 						//Go back one and add to stack
 						currIndex++;
 						path.push(currIndex);
-						System.out.println("Added: " + currIndex+ " " + MV[currIndex]);
 						changeFound = true;
 					}
 					forward++;
 				}
 			}
 		}
-		
+
 		//Print path stack
 		boolean empty = false;
 		System.out.print("Positions: ");
@@ -186,13 +177,12 @@ public class maivassign3{
 				System.out.println();
 			}
 		}
-		
+
 		return MV[MV.length-1];
 	}
 
 }
 
-/* ------------------------------------- */
 
 /*
 Used to store billboard position information
