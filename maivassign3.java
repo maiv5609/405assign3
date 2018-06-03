@@ -1,6 +1,7 @@
 import java.util.*;
 import java.io.*;
 
+
 public class maivassign3{
 	public static void main(String [] args){
 		Scanner	read = new Scanner(System.in);
@@ -34,8 +35,6 @@ public class maivassign3{
 						//intervals
 						minIntr = Integer.parseInt(split[0]);
 						maxIntr = Integer.parseInt(split[1]);
-						System.out.println("Min interval: " + minIntr);
-						System.out.println("Max interval: " + maxIntr);
 					}else if (lineNum == 1){
 						//positions
 						for(int x = 0; x < split.length; x++){
@@ -53,38 +52,95 @@ public class maivassign3{
 						}
 					}
 					lineNum++;
-
-					//Plan: fill out table of max value up to that position and go from endpoint back to find solution(?)
 				}
-				//TODO: remove this, test print
-				// for(int x = 0; x < 7; x++){
-				// 	curr = signs.get(x);
-				// 	System.out.print(curr.getDistance() + " " + curr.getRev() + " \r");
-				// }
-			//	sortbyFinish(main);
 			}catch(IOException ex){
 				ex.printStackTrace();
 			}
 		}
+		System.out.println("\nMax rev from input file is: " + findMaxRev(signs, minIntr, maxIntr));
+
 	}
+	public static int findMaxRev(ArrayList<sign>signs, int minIntr, int maxIntr){
+		int diff = 0;
+		int next = 0;
+		int prevIndex = 0;
+		sign curr = null;
+
+		//Create arrays of positions and rev
+		int[] positions = new int [signs.size()];
+		int[] rev = new int [signs.size()];
+
+		for(int i = 0; i < positions.length; i++){
+			curr = signs.get(i);
+			positions[i] = curr.getDistance();
+			rev[i] = curr.getRev();
+		}
+
+		//TODO: delete this
+		// for(int i = 0; i < positions.length; i++){
+		// 	System.out.print("Position: " + positions[i]);
+		// 	System.out.print(" Rev: " + rev[i] + "\n");
+		// }
+
+		curr = signs.get(signs.size()-1);
+		System.out.println(curr.getDistance());
+		int[] MV = new int[curr.getDistance()+1];
+
+		MV[0] = 0;
+
+		//Assign first position
+		next = 0;
+
+		//Go through each possible sign position
+		//Building table based on minIntr
+		for (int x = 1; x < MV.length; x++){
+			if(next < MV.length){
+				//Check if valid position
+				if(positions[next] != x){
+					//None add prev rev value
+					MV[x] = MV[x-1];
+					System.out.println("M[" + x +"]: " + MV[x] + " Prev");
+				}else{
+					//Check lower constraint
+					if(x >= minIntr){
+						MV[x] = Math.max(MV[x-minIntr] + rev[next], MV[x-1]);
+						prevIndex = x;
+						System.out.println("M[" + x +"]: " + MV[x] + " New");
+					}else{
+						//No billboard placed yet
+						MV[x] = rev[next];
+						System.out.println("M[" + x +"]: " + MV[x] + " first");
+					}
+					next++;
+				}
+			}
+
+		}
+		
+		//Table built starting from end of table, jump backwards minIntr and look up to maxIntr for value change
+		
+		
+		return 0;
+	}
+
 }
 
 /* ------------------------------------- */
 
 /*
 Used to store billboard position information
-Stores position intially to use for getting rev value
+Stores index intially to use for getting rev value
 */
 class sign{
-	int distance, position, rev;
+	int distance, index, rev;
 
-	sign(int distance, int position){
+	sign(int distance, int index){
 		this.distance = distance;
-		this.position = position;
+		this.index = index;
 	}
 
-	public void setRev(int currPosition, int rev){
-		if(currPosition == position){
+	public void setRev(int currIndex, int rev){
+		if(currIndex == index){
 			this.rev = rev;
 		}
 	}
