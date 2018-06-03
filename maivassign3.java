@@ -61,9 +61,12 @@ public class maivassign3{
 
 	}
 	public static int findMaxRev(ArrayList<sign>signs, int minIntr, int maxIntr){
+		Stack<Integer> path = new Stack<Integer>();
 		int diff = 0;
 		int next = 0;
 		int prevIndex = 0;
+		int currIndex = 0;
+		boolean finished = false;
 		sign curr = null;
 
 		//Create arrays of positions and rev
@@ -92,7 +95,7 @@ public class maivassign3{
 		next = 0;
 
 		//Go through each possible sign position
-		//Building table based on minIntr
+		//Building table based on minIntr and within maxIntr
 		for (int x = 1; x < MV.length; x++){
 			if(next < MV.length){
 				//Check if valid position
@@ -101,11 +104,18 @@ public class maivassign3{
 					MV[x] = MV[x-1];
 					System.out.println("M[" + x +"]: " + MV[x] + " Prev");
 				}else{
-					//Check lower constraint
+					//Check lower constraint 
 					if(x >= minIntr){
-						MV[x] = Math.max(MV[x-minIntr] + rev[next], MV[x-1]);
-						prevIndex = x;
-						System.out.println("M[" + x +"]: " + MV[x] + " New");
+						//Check upper constraint 
+						if((x-prevIndex) <= maxIntr){
+							MV[x] = Math.max(MV[x-minIntr] + rev[next], MV[x-1]);
+							prevIndex = x;
+							System.out.println("M[" + x +"]: " + MV[x] + " New");
+						}else{
+							//Outside upper contraint use prev
+							MV[x] = MV[x-1];
+							System.out.println("M[" + x +"]: " + MV[x] + " Prev");
+						}
 					}else{
 						//No billboard placed yet
 						MV[x] = rev[next];
@@ -117,10 +127,67 @@ public class maivassign3{
 
 		}
 		
-		//Table built starting from end of table, jump backwards minIntr and look up to maxIntr for value change
+		//Table built starting from end of table, jump backwards minIntr and look through each index up to maxIntr for value change
+
+		currIndex = MV.length-1;
+		System.out.println();
+		System.out.println("Length: " + currIndex);
+		int currValue = 0;
+		int forward = 1;
+		boolean changeFound = false;
+		//Start with last and check for value change
+		currValue = MV[currIndex];
+		while (changeFound == false){
+			currIndex--;
+			int text = MV[currIndex];
+			if(currValue != MV[currIndex]){
+				//Go back one and add to stack
+				currIndex++;
+				path.push(currIndex);
+				System.out.println("Added: " + currIndex+ " " + MV[currIndex]);
+				changeFound = true;
+			}
+			forward++;
+		}
 		
+		while(finished == false){
+			currIndex = currIndex - minIntr;
+			if(currIndex <= 0){
+				finished = true;
+			}else{
+				currValue = MV[currIndex];
+				//Reset
+				forward = 1;
+				changeFound = false;
+				//Look up to maxIntr for value change
+				while (changeFound == false && forward <= (maxIntr-minIntr)+1){
+					currIndex--;
+					int text = MV[currIndex];
+					if(currValue != MV[currIndex]){
+						//Go back one and add to stack
+						currIndex++;
+						path.push(currIndex);
+						System.out.println("Added: " + currIndex+ " " + MV[currIndex]);
+						changeFound = true;
+					}
+					forward++;
+				}
+			}
+		}
 		
-		return 0;
+		//Print path stack
+		boolean empty = false;
+		System.out.print("Positions: ");
+		while (empty == false){
+			try{
+				System.out.print(path.pop() + " ");
+			}catch(EmptyStackException ex){
+				empty = true;
+				System.out.println();
+			}
+		}
+		
+		return MV[MV.length-1];
 	}
 
 }
