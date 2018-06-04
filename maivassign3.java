@@ -6,6 +6,13 @@ EXAMPLE EXPECTED INPUT FORMAT
 2 5
 1   2   3  6   8  9   10
 10  11  4  17  6  15  20
+Assumes input file has positions sorted from least to greatest
+
+Given an input file finds sequence of signs for highest rev given minimum intervals
+and maximum intervals
+
+If there is no sequence of signs that match the contraints, selects highest rev
+position
 */
 
 public class maivassign3{
@@ -59,6 +66,7 @@ public class maivassign3{
 					}
 					lineNum++;
 				}
+				curr = signs.get(0);
 			}catch(IOException ex){
 				ex.printStackTrace();
 			}
@@ -124,61 +132,89 @@ public class maivassign3{
 
 		//Table built starting from end of table, jump backwards minIntr and look through each index up to maxIntr for value change
 		currIndex = MV.length-1;
-		System.out.println();
 		int currValue = 0;
 		int forward = 1;
 		boolean changeFound = false;
+		boolean pathFound = false;
 		//Start with last and check for value change
 		currValue = MV[currIndex];
-		while (changeFound == false){
+		while (changeFound == false && currIndex >= 1){
+			forward++;
 			currIndex--;
-			int text = MV[currIndex];
 			if(currValue != MV[currIndex]){
 				//Go back one and add to stack
 				currIndex++;
 				path.push(currIndex);
 				changeFound = true;
+				pathFound = true;
 			}
-			forward++;
 		}
 
-		while(finished == false){
-			currIndex = currIndex - minIntr;
-			if(currIndex <= 0){
-				finished = true;
-			}else{
-				currValue = MV[currIndex];
-				//Reset
-				forward = 1;
-				changeFound = false;
-				//Look up to maxIntr for value change
-				while (changeFound == false && forward <= (maxIntr-minIntr)+1){
-					currIndex--;
-					int text = MV[currIndex];
-					if(currValue != MV[currIndex]){
-						//Go back one and add to stack
-						currIndex++;
-						path.push(currIndex);
-						changeFound = true;
+		//Path is available
+		if(pathFound){
+			while(finished == false){
+				currIndex = currIndex - minIntr;
+				if(currIndex <= 0){
+					finished = true;
+				}else{
+					currValue = MV[currIndex];
+					//Reset
+					forward = 1;
+					changeFound = false;
+					//Look up to maxIntr for value change
+					while (changeFound == false && forward <= (maxIntr-minIntr)+1){
+						currIndex--;
+						if(currValue != MV[currIndex]){
+							//Go back one and add to stack
+							currIndex++;
+							path.push(currIndex);
+							changeFound = true;
+						}
+						forward++;
 					}
-					forward++;
 				}
 			}
-		}
 
-		//Print path stack
-		boolean empty = false;
-		System.out.print("Positions: ");
-		while (empty == false){
-			try{
-				System.out.print(path.pop() + " ");
-			}catch(EmptyStackException ex){
-				empty = true;
-				System.out.println();
+			//Print path stack
+			boolean empty = false;
+			System.out.print("\nPositions: ");
+			while (empty == false){
+				try{
+					System.out.print(path.pop() + " ");
+				}catch(EmptyStackException ex){
+					empty = true;
+					System.out.println();
+				}
 			}
+			return MV[MV.length-1];
+		}else{
+			int positionIndex = 0;
+			//No sequence of signs available
+			if(positions.length > 1){
+				//Multiple signs, go through and pick largest one
+				currValue = 0;
+				for(int i = 0; i < rev.length; i++){
+					if(currValue < rev[i]){
+						positionIndex = i;
+						currValue = rev[i];
+					}
+				}
+				System.out.println("Position: " + positions[positionIndex]);
+				return currValue;
+			}else if(positions.length == 1){
+				//One sign
+				System.out.println("Position: " + positions[0]);
+				return rev[0];
+			}else{
+				//No signs, shouldn't happen...
+				System.out.println("No placement arrangement available with given input");
+				return 0;
+			}
+
 		}
 
-		return MV[MV.length-1];
+
+
 	}
 
 }
