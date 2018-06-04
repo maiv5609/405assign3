@@ -72,8 +72,8 @@ public class maivassign3{
 			}
 		}
 		System.out.println("\nMax rev from input file is: " + findMaxRev(signs, minIntr, maxIntr));
-
 	}
+
 	public static int findMaxRev(ArrayList<sign>signs, int minIntr, int maxIntr){
 		Stack<Integer> path = new Stack<Integer>();
 		int diff = 0;
@@ -95,10 +95,7 @@ public class maivassign3{
 
 		curr = signs.get(signs.size()-1);
 		int[] MV = new int[curr.getDistance()+1];
-
 		MV[0] = 0;
-
-		//Assign first position
 		next = 0;
 
 		//Go through each possible sign position
@@ -127,7 +124,6 @@ public class maivassign3{
 					next++;
 				}
 			}
-
 		}
 
 		//Table built starting from end of table, jump backwards minIntr and look through each index up to maxIntr for value change
@@ -210,13 +206,8 @@ public class maivassign3{
 				System.out.println("No placement arrangement available with given input");
 				return 0;
 			}
-
 		}
-
-
-
 	}
-
 }
 
 
